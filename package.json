@@ -1,0 +1,24 @@
+{
+  "name": "short_vs_long",
+  "version": "0.0.0",
+  "description": "short_vs_long",
+  "main": "app.js",
+  "scripts": {
+    "build": "npx babel src -d dist",
+    "start": "npx babel-node src/app.js"
+  },
+  "author": "soralis_nem",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "date-utils": "^1.2.21",
+    "fs-extra": "^6.0.1",
+    "node-cron": "^1.2.1",
+    "puppeteer": "^1.5.0",
+    "twitter": "^1.7.1"
+  }
+}
