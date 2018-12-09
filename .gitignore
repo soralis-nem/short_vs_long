@@ -71,7 +71,7 @@ typings/
 .vscode
 
 #data
-data/test.png
 data/config.json
 data/history.json
 data/previous.json
+data/now.json

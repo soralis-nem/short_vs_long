@@ -3,10 +3,10 @@ const axios = require('axios');
 const fs = require('fs-extra')
 const path = require('path');
 const twitter = require('twitter');
-const puppeteer = require('puppeteer');
 const cron = require('node-cron');
 require('date-utils');
 
+process.on('unhandledRejection', console.dir);
 
 //設定を読み込み
 const dataDir = path.join(__dirname, '../data/');
@@ -29,7 +29,6 @@ async function start() {
     [prevTimeFormat, nowTimeFormat, hisTimeFormat,nowH] =  setTime(prevPositions, hisPositions);
 
     await getPos(nowPositions);
-    await getCaptcha();
     [margin, margin24] = getMargin();
 
     //小数点以下切り捨て
@@ -74,7 +73,6 @@ async function start() {
     message += `\n`;
     message24 += `LS比 : ${nowParLong} vs ${nowParShort} (${hisParLong} vs ${hisParShort})`;
 
-    await getCaptcha();
     await uploadImage(message);
     await uploadImage(message24);
     saveData(nowPositions, hisPositions);
@@ -131,16 +129,6 @@ async function getShort(short) {
 }
 
 
-async function getCaptcha() {
-
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1024, height: 769 })
-    await page.goto('https://datamish.com', { waitUntil: 'networkidle2' });
-    await timeout(10000)
-    await page.screenshot({ path: `${dataDir}\\test.png` });
-    await browser.close();
-}
 
 function getMargin() {
     let margin ={};
@@ -154,11 +142,8 @@ function getMargin() {
 
 
 async function uploadImage(message) {
-    const data = fs.readFileSync(path.join(dataDir, 'test.png'));
-    const media = await client.post('media/upload', { media: data });
     const status = {
-        status: message,
-        media_ids: media.media_id_string
+        status: message
     }
     await client.post('statuses/update', status);
 }
