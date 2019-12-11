@@ -4,9 +4,19 @@ const fs = require('fs-extra')
 const path = require('path');
 const twitter = require('twitter');
 const cron = require('node-cron');
+
+//デバッグの設定
+process.env.DEBUG = process.env.DEBUG || 'info';
+const info = require('debug')('info');
+info.log = console.log.bind(console);
 require('date-utils');
 
+//Promiseのエラーを表示
 process.on('unhandledRejection', console.dir);
+//未定義のエラー処理
+process.on('uncaughtException', function(err) {
+    console.log(err);
+});
 
 //設定を読み込み
 const dataDir = path.join(__dirname, '../data/');
@@ -18,13 +28,13 @@ const client = new twitter({
     access_token_key: config.access_token_key,
     access_token_secret: config.access_token_secret,
 });
-
+info("start process");
 cron.schedule('0 * * * *', start);
 
 
 async function start() {
 
-    console.log("start");
+    info("start tweet");
     [hisPositions, nowPositions, prevPositions] = setPositions();
     [prevTimeFormat, nowTimeFormat, hisTimeFormat,nowH] =  setTime(prevPositions, hisPositions);
 
@@ -76,7 +86,7 @@ async function start() {
     await uploadImage(message);
     await uploadImage(message24);
     saveData(nowPositions, hisPositions);
-    console.log("stop");
+    info("stop tweet");
 }
 
 function setPositions() {
